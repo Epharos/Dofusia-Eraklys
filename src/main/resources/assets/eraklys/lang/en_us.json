@@ -79,5 +79,6 @@
     "quest.remaining":"(%s remaining)",
     "quest.hidden":"???",
     "quest.reward.exp":"XP : %s",
-    "quest.reward.money":"Coins : %s"
+    "quest.reward.money":"Coins : %s",
+    "mainmenu.connect": "Server"
 }

@@ -4,6 +4,7 @@ public class ServerProxy extends Proxy
 {
 	public ServerProxy()
 	{
-		
+
 	}
 }
+
