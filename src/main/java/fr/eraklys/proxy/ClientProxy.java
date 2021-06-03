@@ -5,7 +5,7 @@ import java.util.List;
 import org.lwjgl.glfw.GLFW;
 
 import fr.eraklys.Eraklys;
-import fr.eraklys.screen.menu.MainMenu;
+import fr.eraklys.screen.MainMenu;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.ResourceLocation;

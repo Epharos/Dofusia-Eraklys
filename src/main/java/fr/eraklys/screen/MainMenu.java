@@ -1,4 +1,4 @@
-package fr.eraklys.screen.menu;
+package fr.eraklys.screen;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
