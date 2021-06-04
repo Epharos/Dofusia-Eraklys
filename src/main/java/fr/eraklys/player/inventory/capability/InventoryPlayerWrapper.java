@@ -23,19 +23,16 @@ public class InventoryPlayerWrapper implements ICapabilitySerializable<INBT>
 		this(Eraklys.INVENTORY_CAPABILITY.getDefaultInstance());
 	}
 	
-	@Override
 	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) 
 	{
 		return Eraklys.INVENTORY_CAPABILITY.orEmpty(cap, this.lazyOptional);
 	}
 
-	@Override
 	public INBT serializeNBT() 
 	{
 		return Eraklys.INVENTORY_CAPABILITY.writeNBT(this.holder, null);
 	}
 
-	@Override
 	public void deserializeNBT(INBT nbt) 
 	{
 		Eraklys.INVENTORY_CAPABILITY.readNBT(this.holder, null, nbt);

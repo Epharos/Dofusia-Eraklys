@@ -80,5 +80,9 @@
     "quest.hidden":"???",
     "quest.reward.exp":"XP : %s",
     "quest.reward.money":"Coins : %s",
-    "mainmenu.connect": "Server"
+
+    "mainmenu.connect": "Server",
+
+    "player.inventory" : "Inventory",
+    "player.bank" : "Bank"
 }

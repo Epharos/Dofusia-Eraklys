@@ -18,6 +18,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 public class ClientProxy extends Proxy 
 {
 	public static final KeyBinding showQuests = new KeyBinding("key.quests", GLFW.GLFW_KEY_W, "key.category." + Eraklys.MODID);
+	public static final KeyBinding showBank = new KeyBinding("key.bank", GLFW.GLFW_KEY_H, "key.category." + Eraklys.MODID);
 
 	public static boolean drawTitle = true;
 	public static boolean drawSplash = true;
@@ -41,6 +42,7 @@ public class ClientProxy extends Proxy
 	static
 	{
 		ClientRegistry.registerKeyBinding(showQuests);
+		ClientRegistry.registerKeyBinding(showBank);
 	}
 
 	@SubscribeEvent

@@ -8,7 +8,12 @@ import org.apache.logging.log4j.Logger;
 
 import fr.eraklys.commands.ClearInventoryCommand;
 import fr.eraklys.commands.GiveItemCommand;
+import fr.eraklys.commands.GiveRandomCommand;
 import fr.eraklys.commands.SpawnNpcCommand;
+import fr.eraklys.economy.bank.ScreenBank;
+import fr.eraklys.economy.bank.capability.IBank;
+import fr.eraklys.economy.bank.capability.InventoryBankWrapper;
+import fr.eraklys.economy.bank.capability.ServerInventoryBankHolder;
 import fr.eraklys.entities.EntitiesRegister;
 import fr.eraklys.entities.RenderRegister;
 import fr.eraklys.inventory.ComparableItemStack;
@@ -18,7 +23,9 @@ import fr.eraklys.player.inventory.ScreenInventory;
 import fr.eraklys.player.inventory.capability.IInventoryPlayer;
 import fr.eraklys.player.inventory.capability.InventoryPlayerWrapper;
 import fr.eraklys.player.inventory.capability.ServerInventoryPlayerHolder;
-import fr.eraklys.proxy.*;
+import fr.eraklys.proxy.ClientProxy;
+import fr.eraklys.proxy.Proxy;
+import fr.eraklys.proxy.ServerProxy;
 import fr.eraklys.quests.KillMonsterTask;
 import fr.eraklys.quests.PacketUpdateQuest;
 import fr.eraklys.quests.Quest;
@@ -114,6 +121,11 @@ public class Eraklys
 	public static final ResourceLocation QUEST_KEY = new ResourceLocation(Eraklys.MODID, "quest");
 	private static final Map<PlayerEntity, IQuest> INVALIDATED_QUEST = new WeakHashMap<>();
 	
+	@CapabilityInject(IBank.class)
+	public static final Capability<IBank> BANK_CAPABILITY = null;
+	public static final ResourceLocation BANK_KEY = new ResourceLocation(Eraklys.MODID, "player_bank");
+	private static final Map<PlayerEntity, IBank> INVALIDATED_BANK = new WeakHashMap<>();
+	
 	/**
 	 * Constructor used by Forge to create and load the mod
 	 */
@@ -158,6 +170,7 @@ public class Eraklys
 		GiveItemCommand.register(event.getCommandDispatcher());
 		ClearInventoryCommand.register(event.getCommandDispatcher());
 		SpawnNpcCommand.register(event.getCommandDispatcher());
+		GiveRandomCommand.register(event.getCommandDispatcher());
 	}
 	
 	/**
@@ -172,6 +185,7 @@ public class Eraklys
 		{
 			this.attachInventoryCapability(event);
 			this.attachQuestCapability(event);
+			this.attachBankCapability(event);
 		}
 	}
 	
@@ -196,7 +210,7 @@ public class Eraklys
 	}
 	
 	/**
-	 * Attach the inventory capability to a player, used in {@link #attachToEntities(AttachCapabilitiesEvent)}
+	 * Attach the quest capability to a player, used in {@link #attachToEntities(AttachCapabilitiesEvent)}
 	 * 
 	 * @param event
 	 */
@@ -215,10 +229,25 @@ public class Eraklys
 		}));
 	}
 	
+	private void attachBankCapability(final AttachCapabilitiesEvent<Entity> event)
+	{
+		InventoryBankWrapper wrapper;
+		
+		if(event.getObject() instanceof ServerPlayerEntity)
+			wrapper = new InventoryBankWrapper(new ServerInventoryBankHolder((PlayerEntity) event.getObject()));
+		else
+			wrapper = new InventoryBankWrapper();
+		
+		event.addCapability(BANK_KEY, wrapper);
+		event.addListener(() -> wrapper.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+			INVALIDATED_BANK.put((PlayerEntity) event.getObject(), cap);
+		}));
+	}
+	
 	@SuppressWarnings("resource")
 	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
-	public void tooltipWeightAndQuentity(final ItemTooltipEvent event)
+	public void tooltipWeightAndQuantity(final ItemTooltipEvent event)
 	{
 		if(event.getPlayer() != null)
 		{
@@ -262,6 +291,14 @@ public class Eraklys
 					Eraklys.QUEST_CAPABILITY.readNBT(copyCap, null, nbt);
 				}
 			});
+			
+			event.getEntity().getCapability(Eraklys.BANK_CAPABILITY).ifPresent(copyCap -> {
+				if(INVALIDATED_BANK.containsKey(event.getOriginal()))
+				{
+					INBT nbt = Eraklys.BANK_CAPABILITY.writeNBT(INVALIDATED_BANK.get(event.getOriginal()), null);
+					Eraklys.BANK_CAPABILITY.readNBT(copyCap, null, nbt);
+				}
+			});
 		}
 	}
 	
@@ -302,6 +339,11 @@ public class Eraklys
 		if(ClientProxy.showQuests.isPressed())
 		{
 			Minecraft.getInstance().displayGuiScreen(new QuestScreen());
+		}
+		
+		if(ClientProxy.showBank.isPressed())
+		{
+			Minecraft.getInstance().displayGuiScreen(new ScreenBank(Minecraft.getInstance().player));
 		}
 	}
 	

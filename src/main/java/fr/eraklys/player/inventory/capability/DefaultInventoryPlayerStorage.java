@@ -8,13 +8,11 @@ import net.minecraftforge.common.capabilities.Capability;
 
 public class DefaultInventoryPlayerStorage implements Capability.IStorage<IInventoryPlayer> 
 {
-	@Override
 	public INBT writeNBT(Capability<IInventoryPlayer> capability, IInventoryPlayer instance, Direction side) 
 	{
 		return instance.getInventory().serializeNBT(instance.getPlayer());
 	}
 
-	@Override
 	public void readNBT(Capability<IInventoryPlayer> capability, IInventoryPlayer instance, Direction side, INBT nbt) 
 	{
 		if(nbt instanceof CompoundNBT)

@@ -181,7 +181,6 @@ public class ContainerInventory extends Container
 				else if(clickTypeIn == ClickType.PICKUP && click == 1) //right click once
 				{
 					final ItemStack stack = slot.getStack();
-					Eraklys.LOGGER.debug("Click droit sur le slot " + slotId + " contenant " + stack.getItem());
 					DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
 						Screen current = null;
 						if((current = Minecraft.getInstance().currentScreen) instanceof ScreenInventory)

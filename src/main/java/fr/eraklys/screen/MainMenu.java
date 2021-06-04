@@ -71,19 +71,18 @@ public class MainMenu extends Screen
 		this.widthCopyright = this.font.getStringWidth("Copyright Mojang AB. Do not distribute!");
 		this.widthCopyrightRest = this.width - this.widthCopyright - 2;
 		int j = this.height / 4 + 48;
-		this.addButton(new ClickableText(this.width / 2 - 240, j + 10 + 6, I18n.format("menu.options"), (p_213096_1_) -> {
+		this.addButton(new ClickableText(this.width / 4, j + 10 + 6, I18n.format("menu.options"), (p_213096_1_) -> {
 			this.minecraft.displayGuiScreen(new OptionsScreen(this, this.minecraft.gameSettings));
 		}));
-		this.addButton(new ClickableText(this.width / 2 - 240, j + 4 + 36, I18n.format("menu.quit"), (p_213094_1_) -> {
+		this.addButton(new ClickableText(this.width / 4, j + 4 + 36, I18n.format("menu.quit"), (p_213094_1_) -> {
 			this.minecraft.shutdown();
 		}));
 		this.addSingleplayerMultiplayerButtons(j, 24);
 	}
 
-	@SuppressWarnings("unused")
 	private void addSingleplayerMultiplayerButtons(int yIn, int rowHeightIn) 
 	{
-		this.addButton(new ClickableText(this.width / 2 - 240, yIn + rowHeightIn * 0, I18n.format("mainmenu.connect"), (p_213095_1_) -> {
+		this.addButton(new ClickableText(this.width / 4, yIn + rowHeightIn * 0, I18n.format("mainmenu.connect"), (p_213095_1_) -> {
 			this.minecraft.displayGuiScreen(new ConnectingScreen(this, this.minecraft, new ServerData("Local", "localhost", false)));
 		}));
 	}
@@ -109,18 +108,8 @@ public class MainMenu extends Screen
 			float scale = .1f, inverse = 1f/scale;
 			RenderSystem.scalef(scale, scale, scale);
 			this.minecraft.getTextureManager().bindTexture(ERAKLYS_LOGO_TEXTURES);
-			Screen.blit((this.width + 5000), (this.height + 10), this.getBlitOffset(), .0f, .0f, this.xLogoSize, this.yLogoSize, 512, 512);
+			Screen.blit((int)(((this.width - this.xLogoSize) / 2) * inverse), 120, this.getBlitOffset(), .0f, .0f, this.xLogoSize, this.yLogoSize, 512, 512);
 			RenderSystem.scalef(inverse, inverse, inverse);
-
-			String s = "Dofusia";
-			if (this.minecraft.isDemo()) 
-			{
-				s = s + " Demo";
-			} 
-			else 
-			{
-				s = s + ("release".equalsIgnoreCase(this.minecraft.getVersionType()) ? "" : "/" + this.minecraft.getVersionType());
-			}
 
 			this.drawString(this.font, "Dofusia", 2, this.height - ( 10 + 1 * (this.font.FONT_HEIGHT + 1)), 16777215 | l);
 			this.drawString(this.font, "Version " + Eraklys.VERSION, 2, this.height - ( 10 + 0 * (this.font.FONT_HEIGHT + 0)), 16777215 | l);
