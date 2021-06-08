@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 public class InventoryPlayerHolder implements IInventoryPlayer 
 {
 	InventoryHolder inventory = new InventoryHolder();
+	int money = 0;
 	
 	public InventoryHolder getInventory() 
 	{
@@ -15,5 +16,17 @@ public class InventoryPlayerHolder implements IInventoryPlayer
 	public PlayerEntity getPlayer() 
 	{
 		return null;
+	}
+
+	public int getMoney() 
+	{
+		return money;
+	}
+
+	@Override
+	public int setMoney(int value) 
+	{
+		money = value;
+		return money;
 	}
 }
