@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 public class InventoryBankHolder implements IBank
 {
 	InventoryStackHolder inventory = new InventoryStackHolder();
+	int money = 0;
 	
 	public InventoryStackHolder getBankInventory() 
 	{
@@ -15,6 +16,16 @@ public class InventoryBankHolder implements IBank
 	public PlayerEntity getPlayer() 
 	{
 		return null;
+	}
+
+	public int getMoney() 
+	{
+		return money;
+	}
+
+	public int setMoney(int value) {
+		money = value;
+		return money;
 	}
 
 }

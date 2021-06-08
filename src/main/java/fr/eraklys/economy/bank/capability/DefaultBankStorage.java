@@ -10,12 +10,17 @@ public class DefaultBankStorage implements Capability.IStorage<IBank>
 {
 	public INBT writeNBT(Capability<IBank> capability, IBank instance, Direction side) 
 	{
-		return instance.getBankInventory().serializeNBT(instance.getPlayer());
+		CompoundNBT compound = instance.getBankInventory().serializeNBT(instance.getPlayer());
+		compound.putInt("money", instance.getMoney());
+		return compound;
 	}
 
 	public void readNBT(Capability<IBank> capability, IBank instance, Direction side, INBT nbt) {
 		if(nbt instanceof CompoundNBT)
+		{
 			instance.getBankInventory().deserializeNBT((CompoundNBT) nbt, instance.getPlayer());
+			instance.setMoney(((CompoundNBT) nbt).getInt("money"));
+		}
 		else
 			Eraklys.LOGGER.error("Erreur en chargeant la banque d'un joueur ! (" + instance.getPlayer().getUniqueID() + ")");
 	}
