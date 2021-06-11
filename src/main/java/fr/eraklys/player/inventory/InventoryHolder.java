@@ -52,20 +52,7 @@ public class InventoryHolder extends InventoryStackHolder
 	
 	public void addStack(@Nonnull ItemStack proto, int amount, PlayerEntity player)
 	{		
-		if(amount <= 0 || proto == ItemStack.EMPTY || proto.getItem() == Items.AIR)
-			return;
-		
-		ItemStack stack = ItemStackUtil.getPrototype(proto);
-		Integer i = this.getMapping().get(new ComparableItemStack(stack));
-		
-		if(i != null)
-		{
-			this.getMapping().put(new ComparableItemStack(stack), i + amount);
-		}
-		else
-		{
-			this.getMapping().put(new ComparableItemStack(stack), amount);
-		}
+		super.addStack(proto, amount, player);
 		
 		DistExecutor.runWhenOn(Dist.DEDICATED_SERVER, () -> () -> syncPlayer((ServerPlayerEntity) player, proto, amount, true));
 	}

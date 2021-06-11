@@ -19,6 +19,7 @@ import fr.eraklys.entities.RenderRegister;
 import fr.eraklys.inventory.ComparableItemStack;
 import fr.eraklys.inventory.ItemWeight;
 import fr.eraklys.player.inventory.ContainerInventory;
+import fr.eraklys.player.inventory.PacketUpdateMoney;
 import fr.eraklys.player.inventory.ScreenInventory;
 import fr.eraklys.player.inventory.capability.IInventoryPlayer;
 import fr.eraklys.player.inventory.capability.InventoryPlayerWrapper;
@@ -319,6 +320,8 @@ public class Eraklys
 			{
 				cap.getInventory().syncHotbarQueue((ServerPlayerEntity) player);
 			}
+			
+			Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new PacketUpdateMoney(cap.getMoney()));
 		});
 		
 		player.getCapability(Eraklys.QUEST_CAPABILITY).ifPresent(cap ->
@@ -343,7 +346,9 @@ public class Eraklys
 		
 		if(ClientProxy.showBank.isPressed())
 		{
-			Minecraft.getInstance().displayGuiScreen(new ScreenBank(Minecraft.getInstance().player));
+			Minecraft.getInstance().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+				cap.openBank();
+			});
 		}
 	}
 	

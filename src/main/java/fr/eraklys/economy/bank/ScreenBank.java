@@ -10,6 +10,7 @@ import fr.eraklys.screen.MenuableContainerScreen;
 import fr.eraklys.screen.widget.SimpleScrollBar;
 import fr.eraklys.utils.FontRendererStringUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.PlayerEntity;
@@ -25,9 +26,13 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 	public static final ResourceLocation texture = new ResourceLocation(Eraklys.MODID, "textures/gui/bank.png");
 	
 	private SimpleScrollBar inventoryBar, bankBar;
+	private TextFieldWidget quantity;
 	
 	public Item selectedItem = null;
 	public boolean from = false; //false = de l'inventaire vers la banque, true = de la banque vers l'inventaire
+	
+	public Item transfer = null;
+	public boolean fromInvToBank = false;
 	
 	public ScreenBank(PlayerEntity player) 
 	{
@@ -45,8 +50,12 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 		
 		this.addButton(inventoryBar = new SimpleScrollBar(this.guiLeft + this.xSize - 10, this.guiTop + 19, 8 * 18, (int)(Math.ceil(this.getContainer().playerStacks.size() / 9) * 18)));
 		this.addButton(bankBar = new SimpleScrollBar(this.guiLeft + this.xSize / 2 - 10, this.guiTop + 19, 8 * 18, (int)(Math.ceil(this.getContainer().stacks.size() / 9) * 18)));
+		
+		this.addButton(quantity = new TextFieldWidget(font, this.guiLeft + this.xSize / 2 - 55, this.guiTop + this.ySize + 10, 110, 20, "1"));
+		quantity.setVisible(false);
 	}
 	
+	@SuppressWarnings("resource")
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) 
 	{
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -56,6 +65,14 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 		
 		this.blit(this.guiLeft, this.guiTop, 0, 0, xSize / 2, ySize);
 		this.blit(this.guiLeft + xSize / 2, this.guiTop, 0, 0, xSize / 2, ySize);
+		
+		this.getMinecraft().player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+			this.font.drawString(FontRendererStringUtil.formatMoney(cap.getMoney()), this.guiLeft + xSize / 2 + 24, this.guiTop + 169, 0xd0d0d0);
+		});
+		
+		this.getMinecraft().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+			this.font.drawString(FontRendererStringUtil.formatMoney(cap.getMoney()), this.guiLeft + 24, this.guiTop + 169, 0xd0d0d0);
+		});
 	}
 	
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) 
@@ -64,6 +81,9 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 		
 		this.font.drawString(new TranslationTextComponent("player.inventory").getFormattedText(), this.guiLeft + this.xSize / 2 + 8, this.guiTop + 7, 0x333333);
 		this.font.drawString(new TranslationTextComponent("player.bank").getFormattedText(), this.guiLeft + 8, this.guiTop + 7, 0x333333);
+		
+		this.inventoryBar.updateContainerHeight((int)(Math.ceil(this.getContainer().playerStacks.size() / 9) * 18));
+		this.bankBar.updateContainerHeight((int)(Math.ceil(this.getContainer().stacks.size() / 9) * 18));
 	}
 	
 	public void render(int p_render_1_, int p_render_2_, float p_render_3_) 

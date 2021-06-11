@@ -3,12 +3,14 @@ package fr.eraklys.economy.bank;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.eraklys.Eraklys;
 import fr.eraklys.inventory.ComparableItemStack;
 import fr.eraklys.inventory.InventoryStackHolder;
 import fr.eraklys.inventory.slots.InventorySlot;
 import fr.eraklys.player.inventory.InventoryHolder;
+import fr.eraklys.utils.ItemStackUtil;
 import fr.eraklys.utils.ListedMap.Entry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -63,14 +65,7 @@ public class ContainerBank extends Container
 			}
 		}
 		
-		Iterator<Entry<ComparableItemStack, Integer>> it = this.stackholder.getMapping().entryList().iterator();
-		while(it.hasNext())
-		{
-			ItemStack stack = it.next().getKey().getStack();
-			stacks.add(stack);
-		}
-		
-		it = this.playerInventory.getMapping().entryList().iterator();
+		Iterator<Entry<ComparableItemStack, Integer>> it = this.playerInventory.getMapping().entryList().iterator();
 		while(it.hasNext())
 		{
 			ItemStack stack = it.next().getKey().getStack();
@@ -79,6 +74,16 @@ public class ContainerBank extends Container
 		
 		this.scrollBankTo(.0f);
 		this.scrollInventoryTo(.0f);
+	}
+	
+	public void resetBankContent()
+	{
+		Iterator<Entry<ComparableItemStack, Integer>> it = this.stackholder.getMapping().entryList().iterator();
+		while(it.hasNext())
+		{
+			ItemStack stack = it.next().getKey().getStack();
+			stacks.add(stack);
+		}
 	}
 	
 	public void scrollBankTo(float f)
@@ -100,14 +105,14 @@ public class ContainerBank extends Container
 				{
 					if(this.getSlot(i) instanceof InventorySlot)
 					{
-						((InventorySlot)this.getSlot(i * 9 + j)).setStack(this.stacks.get(k) != null ? stacks.get(k) : ItemStack.EMPTY);
+						((InventorySlot)this.getSlot((i + 8) * 9 + j)).setStack(this.stacks.get(k) != null ? stacks.get(k) : ItemStack.EMPTY);
 					}
 				}
 				else
 				{
 					if(this.getSlot(i) instanceof InventorySlot)
 					{
-						((InventorySlot)this.getSlot(i * 9 + j)).setStack(ItemStack.EMPTY);
+						((InventorySlot)this.getSlot((i + 8) * 9 + j)).setStack(ItemStack.EMPTY);
 					}
 				}
 			}
@@ -162,7 +167,28 @@ public class ContainerBank extends Container
 			{
 				if(clickTypeIn == ClickType.PICKUP_ALL) //double left click
 				{
-					//TODO passer un item d'un côté à l'autre
+					//TODO : Pourquoi ça marche pas ?
+					
+					if(slot.getSlotIndex() < 8 * 9)
+					{
+						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+							cap.removeStack(ItemStackUtil.getPrototype(slot.getStack()), 1, false);
+						});
+						
+						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+							cap.getBankInventory().addStack(ItemStackUtil.getPrototype(slot.getStack()), 1, player);
+						});
+					}
+					else
+					{
+						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+							cap.getBankInventory().removeStack(ItemStackUtil.getPrototype(slot.getStack()), 1, player, false);
+						});
+						
+						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+							cap.putStack(ItemStackUtil.getPrototype(slot.getStack()), 1);
+						});
+					}
 				}
 				else if(clickTypeIn == ClickType.PICKUP && click == 1) //right click once
 				{
@@ -175,9 +201,37 @@ public class ContainerBank extends Container
 //						}
 //					});
 				}
-				else if(clickTypeIn == ClickType.QUICK_MOVE) //shift + right click
+				else if(clickTypeIn == ClickType.QUICK_MOVE) //shift + left click
 				{
-					//TODO passer tous les items d'un côté à l'autre
+					//TODO : Corriger le crash en cas de click sur un stack vide
+					//TODO : Update les stacks sur le serveur (pourquoi d'ailleurs ?)
+					
+					if(slot.getSlotIndex() < 8 * 9)
+					{
+						AtomicInteger ai = new AtomicInteger(0);
+						
+						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+							ai.set(cap.getInventory().getMapping().get(new ComparableItemStack(ItemStackUtil.getPrototype(slot.getStack()))));
+							cap.removeStack(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), false);
+						});
+						
+						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+							cap.getBankInventory().addStack(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), player);
+						});
+					}
+					else
+					{
+						AtomicInteger ai = new AtomicInteger(0);
+						
+						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+							ai.set(cap.getBankInventory().getMapping().get(new ComparableItemStack(ItemStackUtil.getPrototype(slot.getStack()))));
+							cap.getBankInventory().removeStack(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), player, false);
+						});
+						
+						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+							cap.putStack(ItemStackUtil.getPrototype(slot.getStack()), ai.get());
+						});
+					}
 				}
 			}
 	     

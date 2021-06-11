@@ -2,10 +2,20 @@ package fr.eraklys.economy.bank.capability;
 
 import javax.annotation.Nonnull;
 
+import fr.eraklys.Eraklys;
+import fr.eraklys.economy.bank.PacketBankMoney;
+import fr.eraklys.economy.bank.PacketOpenBank;
+import fr.eraklys.economy.bank.PacketSendBankItems;
+import fr.eraklys.economy.bank.ScreenBank;
 import fr.eraklys.inventory.InventoryStackHolder;
 import fr.eraklys.utils.ItemStackUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public interface IBank 
 {
@@ -48,5 +58,30 @@ public interface IBank
 		
 		this.setMoney(this.getMoney() - value);
 		return true;
+	}
+	
+	@SuppressWarnings("resource")
+	@OnlyIn(Dist.CLIENT)
+	default void openBank()
+	{
+		while(this.getBankInventory().getMapping().size() > 0) //delete the client-side-stocked inventory 
+		{
+			this.getBankInventory().getMapping().remove(this.getBankInventory().getMapping().listKeys().get(0));
+		}
+		
+		Eraklys.CHANNEL.send(PacketDistributor.SERVER.noArg(), new PacketOpenBank());
+		
+		Minecraft.getInstance().displayGuiScreen(new ScreenBank(Minecraft.getInstance().player));
+	}
+	
+	@OnlyIn(Dist.DEDICATED_SERVER)
+	default void synchronizeClient()
+	{
+		Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) this.getPlayer()), new PacketBankMoney(this.getMoney()));
+		
+		for(int i = 0 ; i < this.getBankInventory().getSize() ; i++)
+		{
+			Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) this.getPlayer()), new PacketSendBankItems(this.getBankInventory().getMapping().listKeys().get(i).getStack(), this.getBankInventory().getMapping().listValues().get(i), (i == this.getBankInventory().getSize() - 1)));
+		}
 	}
 }

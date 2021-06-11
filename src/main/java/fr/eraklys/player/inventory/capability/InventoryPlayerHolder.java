@@ -23,7 +23,6 @@ public class InventoryPlayerHolder implements IInventoryPlayer
 		return money;
 	}
 
-	@Override
 	public int setMoney(int value) 
 	{
 		money = value;

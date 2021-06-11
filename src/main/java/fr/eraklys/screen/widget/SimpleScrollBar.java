@@ -45,6 +45,11 @@ public class SimpleScrollBar extends Widget
 		return mouseX >= this.x && mouseX <= this.x + this.getWidth() && mouseY >= (y + (this.scrollingHeight - this.getHeight()) * this.getScrollValue()) && mouseY <= (y + this.getHeight() + (this.scrollingHeight - this.getHeight()) * this.getScrollValue());
 	}
 	
+	public void updateContainerHeight(int value)
+	{
+		this.containerHeight = value;
+	}
+	
 	public boolean mouseClicked(double mouseX, double mouseY, int p_mouseClicked_5_) 
 	{
 		if(this.isScrollingHovered((int)mouseX, (int)mouseY) && this.active)
