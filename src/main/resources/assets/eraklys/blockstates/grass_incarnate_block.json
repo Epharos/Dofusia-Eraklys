@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "eraklys:block/grass_incarnate_block" },
+            { "model": "eraklys:block/grass_incarnate_block", "y": 90 },
+            { "model": "eraklys:block/grass_incarnate_block", "y": 180 },
+            { "model": "eraklys:block/grass_incarnate_block", "y": 270 }
+        ]
+    }
+}

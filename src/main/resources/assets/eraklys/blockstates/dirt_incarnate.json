@@ -1,0 +1,10 @@
+{
+    "variants": {
+        "": [
+            { "model": "eraklys:block/dirt_incarnate" },
+            { "model": "eraklys:block/dirt_incarnate", "y": 90 },
+            { "model": "eraklys:block/dirt_incarnate", "y": 180 },
+            { "model": "eraklys:block/dirt_incarnate", "y": 270 }
+        ]
+    }
+}

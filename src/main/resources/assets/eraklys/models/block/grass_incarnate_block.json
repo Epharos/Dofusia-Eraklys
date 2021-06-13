@@ -1,0 +1,8 @@
+{
+    "parent": "block/cube_bottom_top",
+    "textures": {
+        "bottom": "eraklys:blocks/dirt_incarnate",
+        "top": "eraklys:blocks/grass_incarnate_block_top",
+        "side": "eraklys:blocks/grass_incarnate_block"
+    }
+}

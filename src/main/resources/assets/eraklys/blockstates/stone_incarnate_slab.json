@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "type=bottom": { "model": "eraklys:block/stone_incarnate_slab" },
+        "type=top": { "model": "eraklys:block/stone_incarnate_slab_top" },
+        "type=double": { "model": "eraklys:block/stone_incarnate" }
+    }
+}

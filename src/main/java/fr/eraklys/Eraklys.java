@@ -3,6 +3,7 @@ package fr.eraklys;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -16,6 +17,7 @@ import fr.eraklys.economy.bank.capability.InventoryBankWrapper;
 import fr.eraklys.economy.bank.capability.ServerInventoryBankHolder;
 import fr.eraklys.entities.EntitiesRegister;
 import fr.eraklys.entities.RenderRegister;
+import fr.eraklys.init.ModBlocks;
 import fr.eraklys.inventory.ComparableItemStack;
 import fr.eraklys.inventory.ItemWeight;
 import fr.eraklys.player.inventory.ContainerInventory;
@@ -42,6 +44,7 @@ import fr.eraklys.translation.TranslationLoader;
 import fr.eraklys.utils.CapabilitiesRegisterer;
 import fr.eraklys.utils.ItemStackUtil;
 import fr.eraklys.utils.PacketRegisterer;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.entity.Entity;
@@ -49,6 +52,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SharedConstants;
@@ -66,9 +71,11 @@ import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
@@ -90,6 +97,15 @@ public class Eraklys
 	public static final String VERSION = "0.0.1 (pre-alpha)";
 	public static final Logger LOGGER = LogManager.getLogger(Eraklys.MODID);
 	public static Proxy proxy;
+	public static final ItemGroup ITEM_GROUP = new ItemGroup(MODID)
+    {
+        @Override
+        @OnlyIn(Dist.CLIENT)
+        public ItemStack createIcon()
+        {
+            return new ItemStack(Blocks.COBBLESTONE);
+        }
+    };
 	
 	public static final Speech SPEECH = new Speech();
 	public static final TranslationLoader TRANSLATION = new TranslationLoader();
@@ -131,11 +147,14 @@ public class Eraklys
 	 * Constructor used by Forge to create and load the mod
 	 */
 	public Eraklys()
-	{
+	{	
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::commonSetup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::serverSetup);
 		MinecraftForge.EVENT_BUS.register(this);
+		
+		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		ModBlocks.register(modEventBus);
 	}
 	
 	/**

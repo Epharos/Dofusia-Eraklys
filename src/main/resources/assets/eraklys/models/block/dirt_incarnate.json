@@ -1,0 +1,6 @@
+{
+    "parent": "block/cube_all",
+    "textures": {
+        "all": "eraklys:blocks/dirt_incarnate"
+    }
+}

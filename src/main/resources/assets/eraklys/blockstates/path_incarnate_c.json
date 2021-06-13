@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "eraklys:block/path_incarnate_c" },
+        "facing=south": { "model": "eraklys:block/path_incarnate_c", "y": 180 },
+        "facing=west":  { "model": "eraklys:block/path_incarnate_c", "y": 270 },
+        "facing=east":  { "model": "eraklys:block/path_incarnate_c", "y": 90 }
+    }
+}

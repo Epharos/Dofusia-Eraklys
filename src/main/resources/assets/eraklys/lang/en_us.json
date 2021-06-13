@@ -84,5 +84,23 @@
     "mainmenu.connect": "Server",
 
     "player.inventory" : "Inventory",
-    "player.bank" : "Bank"
+    "player.bank" : "Bank",
+    
+    "block.eraklys.stone_incarnate" : "Stone Incarnate",
+    "block.eraklys.path_incarnate_default" : "Path Incarnate Default",
+    "block.eraklys.path_incarnate_a" : "Path Incarnate A",
+    "block.eraklys.path_incarnate_b" : "Path Incarnate B",
+    "block.eraklys.path_incarnate_c" : "Path Incarnate C",
+    "block.eraklys.path_incarnate_d" : "Path Incarnate D",
+    "block.eraklys.path_incarnate_e" : "Path Incarnate E",
+    "block.eraklys.path_incarnate_f" : "Path Incarnate F",
+    "block.eraklys.path_incarnate_g" : "Path Incarnate G",
+    "block.eraklys.path_incarnate_h" : "Path Incarnate H",
+    "block.eraklys.path_incarnate_i" : "Path Incarnate I",
+    "block.eraklys.stone_incarnate_stairs" : "Stone Incarnate Stairs",
+    "block.eraklys.stone_incarnate_slab" : "Stone Incarnate Slab",
+    "block.eraklys.grass_incarnate_block" : "Grass Incarnate Block",
+    "block.eraklys.dirt_incarnate" : "Dirt Incarnate",
+    
+    "itemGroup.eraklys" : "Eraklys Mod"
 }
