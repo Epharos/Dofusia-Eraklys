@@ -94,7 +94,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 public class Eraklys 
 {
 	public static final String MODID = "eraklys";
-	public static final String VERSION = "0.0.1 (pre-alpha)";
+	public static final String VERSION = "0.0.1 (alpha)";
 	public static final Logger LOGGER = LogManager.getLogger(Eraklys.MODID);
 	public static Proxy proxy;
 	public static final ItemGroup ITEM_GROUP = new ItemGroup(MODID)

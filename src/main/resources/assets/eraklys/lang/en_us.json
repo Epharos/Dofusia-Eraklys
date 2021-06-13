@@ -81,7 +81,7 @@
     "quest.reward.exp":"XP : %s",
     "quest.reward.money":"Coins : %s",
 
-    "mainmenu.connect": "Server",
+    "mainmenu.connect": "Rejoindre Dofusia",
 
     "player.inventory" : "Inventory",
     "player.bank" : "Bank",

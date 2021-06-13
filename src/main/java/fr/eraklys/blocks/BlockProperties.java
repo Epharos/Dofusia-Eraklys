@@ -22,8 +22,13 @@ public class BlockProperties
 	public static final Block.Properties PATH_INCARNATE_I = createProperties(Material.ROCK).harvestTool(ToolType.PICKAXE).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
 	public static final Block.Properties STONE_INCARNATE_STAIRS = createProperties(Material.ROCK).harvestTool(ToolType.PICKAXE).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
 	public static final Block.Properties STONE_INCARNATE_SLAB = createProperties(Material.ROCK).harvestTool(ToolType.PICKAXE).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
+	public static final Block.Properties STONE_INCARNATE_WALL = createProperties(Material.ROCK).harvestTool(ToolType.PICKAXE).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
+	public static final Block.Properties PATH_INCARNATE_STAIRS = createProperties(Material.ROCK).harvestTool(ToolType.PICKAXE).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
+	public static final Block.Properties PATH_INCARNATE_SLAB = createProperties(Material.ROCK).harvestTool(ToolType.PICKAXE).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
+	public static final Block.Properties PATH_INCARNATE_WALL = createProperties(Material.ROCK).harvestTool(ToolType.PICKAXE).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
 	public static final Block.Properties GRASS_INCARNATE_BLOCK = createProperties(Material.ORGANIC).sound(SoundType.PLANT).harvestTool(ToolType.SHOVEL).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
 	public static final Block.Properties DIRT_INCARNATE = createProperties(Material.EARTH).sound(SoundType.GROUND).harvestTool(ToolType.SHOVEL).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
+	public static final Block.Properties GRASS_INCARNATE = createProperties(Material.TALL_PLANTS).sound(SoundType.PLANT).doesNotBlockMovement().hardnessAndResistance(0F, 0F);
 	
 	private static Block.Properties createProperties(Material material)
     {

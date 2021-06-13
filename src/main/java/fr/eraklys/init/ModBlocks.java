@@ -3,12 +3,14 @@ package fr.eraklys.init;
 import java.util.function.Supplier;
 
 import fr.eraklys.Eraklys;
+import fr.eraklys.blocks.TallGrassIncarnateBlock;
 import fr.eraklys.blocks.BlockPathIncarnate;
-import fr.eraklys.blocks.BlockGrassIncarnateBlock;
 import fr.eraklys.blocks.BlockProperties;
 import net.minecraft.block.Block;
+import net.minecraft.block.GrassBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
+import net.minecraft.block.WallBlock;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -37,8 +39,13 @@ public class ModBlocks
 	public static final RegistryObject<Block> PATH_INCARNATE_I = registerBlockWithBasicItem("path_incarnate_i", () -> new BlockPathIncarnate(BlockProperties.PATH_INCARNATE_I));
 	public static final RegistryObject<Block> STONE_INCARNATE_STAIRS = registerBlockWithBasicItem("stone_incarnate_stairs", () -> new StairsBlock(() -> STONE_INCARNATE.get().getDefaultState(), BlockProperties.STONE_INCARNATE_STAIRS));
 	public static final RegistryObject<Block> STONE_INCARNATE_SLAB = registerBlockWithBasicItem("stone_incarnate_slab", () -> new SlabBlock(BlockProperties.STONE_INCARNATE_SLAB));
-	public static final RegistryObject<Block> GRASS_INCARNATE_BLOCK = registerBlockWithBasicItem("grass_incarnate_block", () -> new BlockGrassIncarnateBlock(BlockProperties.GRASS_INCARNATE_BLOCK));
+	public static final RegistryObject<Block> STONE_INCARNATE_WALL = registerBlockWithBasicItem("stone_incarnate_wall", () -> new WallBlock(BlockProperties.STONE_INCARNATE_WALL));
+	public static final RegistryObject<Block> PATH_INCARNATE_STAIRS = registerBlockWithBasicItem("path_incarnate_stairs", () -> new StairsBlock(() -> PATH_INCARNATE_DEFAULT.get().getDefaultState(), BlockProperties.PATH_INCARNATE_STAIRS));
+	public static final RegistryObject<Block> PATH_INCARNATE_SLAB = registerBlockWithBasicItem("path_incarnate_slab", () -> new SlabBlock(BlockProperties.PATH_INCARNATE_SLAB));
+	public static final RegistryObject<Block> PATH_INCARNATE_WALL = registerBlockWithBasicItem("path_incarnate_wall", () -> new WallBlock(BlockProperties.PATH_INCARNATE_WALL));
+	public static final RegistryObject<Block> GRASS_INCARNATE_BLOCK = registerBlockWithBasicItem("grass_incarnate_block", () -> new GrassBlock(BlockProperties.GRASS_INCARNATE_BLOCK));
 	public static final RegistryObject<Block> DIRT_INCARNATE = registerBlockWithBasicItem("dirt_incarnate", BlockProperties.DIRT_INCARNATE);
+	public static final RegistryObject<Block> GRASS_INCARNATE = registerBlockWithBasicItem("grass_incarnate", () -> new TallGrassIncarnateBlock(BlockProperties.GRASS_INCARNATE));
 	
 	public static void register(IEventBus modEventBus)
     {

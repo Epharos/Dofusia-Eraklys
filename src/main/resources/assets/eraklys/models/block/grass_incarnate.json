@@ -1,0 +1,6 @@
+{
+    "parent": "block/tinted_cross",
+    "textures": {
+        "cross": "eraklys:blocks/grass_incarnate"
+    }
+}

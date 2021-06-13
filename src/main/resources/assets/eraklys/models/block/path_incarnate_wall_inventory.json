@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:block/wall_inventory",
+    "textures": {
+        "wall": "eraklys:blocks/path_incarnate_default"
+    }
+}

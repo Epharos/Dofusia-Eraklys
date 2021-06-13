@@ -1,0 +1,8 @@
+{
+    "parent": "block/slab",
+    "textures": {
+        "bottom": "eraklys:blocks/path_incarnate_default",
+        "top": "eraklys:blocks/path_incarnate_default",
+        "side": "eraklys:blocks/path_incarnate_default"
+    }
+}
