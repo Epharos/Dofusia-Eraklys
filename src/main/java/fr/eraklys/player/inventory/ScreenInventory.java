@@ -26,6 +26,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class ScreenInventory extends MenuableContainerScreen<ContainerInventory>
@@ -75,7 +76,7 @@ public class ScreenInventory extends MenuableContainerScreen<ContainerInventory>
 		
 		this.getMinecraft().player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> 
 		{
-			this.blit(this.guiLeft + 142, this.guiTop + 84, 0, 243, (int)(158.0f * Math.max(0, Math.min(100, cap.getWeight() / 4000.f))), 5);
+			this.blit(this.guiLeft + 142, this.guiTop + 84, 0, 243, (int)(158.0f * MathHelper.clamp(cap.getWeight() / 4000.f, .0f, 100.f)), 5);
 			this.font.drawString(FontRendererStringUtil.formatMoney(cap.getMoney()), this.guiLeft + 24, this.guiTop + 103, 0xd0d0d0);
 		});
 		

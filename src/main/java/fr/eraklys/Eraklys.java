@@ -11,6 +11,7 @@ import fr.eraklys.commands.ClearInventoryCommand;
 import fr.eraklys.commands.GiveItemCommand;
 import fr.eraklys.commands.GiveRandomCommand;
 import fr.eraklys.commands.SpawnNpcCommand;
+import fr.eraklys.economy.bank.ContainerBank;
 import fr.eraklys.economy.bank.ScreenBank;
 import fr.eraklys.economy.bank.capability.IBank;
 import fr.eraklys.economy.bank.capability.InventoryBankWrapper;
@@ -125,6 +126,7 @@ public class Eraklys
 	//--- CONTAINERS ---
 	
 	public static ContainerType<?> playerInventoryContainer;
+	public static ContainerType<?> bankInventoryContainer;
 	
 	//--- CAPABILITIES ---
 	
@@ -354,6 +356,7 @@ public class Eraklys
 //		player.getCapability(Eraklys.MONEY_CAPABILITY).ifPresent(cap -> cap.sync());
 	}
 	
+	@SuppressWarnings("resource")
 	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
 	public void onClientTickEvent(final ClientTickEvent event)
@@ -427,6 +430,10 @@ public class Eraklys
         	event.getRegistry().registerAll(
         				Eraklys.playerInventoryContainer = IForgeContainerType.create(ContainerInventory::new).setRegistryName(new ResourceLocation(Eraklys.MODID, "container_inventory"))
         			);
+        	
+        	event.getRegistry().registerAll(
+    				Eraklys.bankInventoryContainer = IForgeContainerType.create(ContainerBank::new).setRegistryName(new ResourceLocation(Eraklys.MODID, "container_bank"))
+    			);
         }
 		
 		@SubscribeEvent

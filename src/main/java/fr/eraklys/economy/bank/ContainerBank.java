@@ -33,12 +33,12 @@ public class ContainerBank extends Container
 	
 	public ContainerBank(int windowID, PlayerInventory inventoryPlayer, PacketBuffer data)
 	{
-		this(inventoryPlayer.player);
+		this(inventoryPlayer.player, windowID);
 	}
 	
-	protected ContainerBank(PlayerEntity player)
+	protected ContainerBank(PlayerEntity player, int windowID)
 	{
-		super(ContainerBank._TYPE, 0);
+		super(ContainerBank._TYPE, windowID);
 		
 		player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> playerInventory = cap.getInventory());
 		player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> stackholder = cap.getBankInventory());
@@ -65,12 +65,8 @@ public class ContainerBank extends Container
 			}
 		}
 		
-		Iterator<Entry<ComparableItemStack, Integer>> it = this.playerInventory.getMapping().entryList().iterator();
-		while(it.hasNext())
-		{
-			ItemStack stack = it.next().getKey().getStack();
-			playerStacks.add(stack);
-		}
+		this.resetBankContent();
+		this.resetPlayerInventoryContent();
 		
 		this.scrollBankTo(.0f);
 		this.scrollInventoryTo(.0f);
@@ -83,6 +79,16 @@ public class ContainerBank extends Container
 		{
 			ItemStack stack = it.next().getKey().getStack();
 			stacks.add(stack);
+		}
+	}
+	
+	public void resetPlayerInventoryContent()
+	{
+		Iterator<Entry<ComparableItemStack, Integer>> it = this.playerInventory.getMapping().entryList().iterator();
+		while(it.hasNext())
+		{
+			ItemStack stack = it.next().getKey().getStack();
+			playerStacks.add(stack);
 		}
 	}
 	
@@ -203,8 +209,7 @@ public class ContainerBank extends Container
 				}
 				else if(clickTypeIn == ClickType.QUICK_MOVE) //shift + left click
 				{
-					//TODO : Corriger le crash en cas de click sur un stack vide
-					//TODO : Update les stacks sur le serveur (pourquoi d'ailleurs ?)
+					//TODO : Dégager les stacks vides (quantité 0, souvent le dernier slot)
 					
 					if(slot.getSlotIndex() < 8 * 9)
 					{
@@ -212,12 +217,35 @@ public class ContainerBank extends Container
 						
 						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
 							ai.set(cap.getInventory().getMapping().get(new ComparableItemStack(ItemStackUtil.getPrototype(slot.getStack()))));
-							cap.removeStack(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), false);
 						});
 						
 						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
 							cap.getBankInventory().addStack(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), player);
+							stacks.add(slot.getStack());
 						});
+						
+						Iterator<ItemStack> it = playerStacks.iterator();
+						
+						for(ItemStack i = ItemStack.EMPTY ; it.hasNext() ; i = it.next())
+						{
+							if(ItemStack.areItemStacksEqual(slot.getStack(), i))
+							{
+								it.remove();
+							}
+							
+//							final ItemStack is = i;
+//							
+//							player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+//								
+//								if(cap.getInventory().getMapping().get(new ComparableItemStack(is)) == null ||
+//										cap.getInventory().getMapping().get(new ComparableItemStack(is)) == 0)
+//								{
+//									it.remove();
+//								}
+//							});
+						}
+						
+						Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), true));
 					}
 					else
 					{
@@ -229,8 +257,31 @@ public class ContainerBank extends Container
 						});
 						
 						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
-							cap.putStack(ItemStackUtil.getPrototype(slot.getStack()), ai.get());
+							cap.putStack(ItemStackUtil.getPrototype(slot.getStack()), 0);
+							playerStacks.add(slot.getStack());
 						});
+						
+						Iterator<ItemStack> it = stacks.iterator();
+						
+						for(ItemStack i = ItemStack.EMPTY ; it.hasNext() ; i = it.next())
+						{
+							if(ItemStack.areItemStacksEqual(slot.getStack(), i))
+							{
+								it.remove();
+							}
+							
+//							final ItemStack is = i;
+//							
+//							player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+//								if(cap.getBankInventory().getMapping().get(new ComparableItemStack(is)) == null ||
+//										cap.getBankInventory().getMapping().get(new ComparableItemStack(is)) == 0)
+//								{
+//									it.remove();
+//								}
+//							});
+						}
+						
+						Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), false));
 					}
 				}
 			}
