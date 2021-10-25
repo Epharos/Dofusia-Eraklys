@@ -60,7 +60,6 @@ public interface IBank
 		return true;
 	}
 	
-	@SuppressWarnings("resource")
 	@OnlyIn(Dist.CLIENT)
 	default void openBank()
 	{
@@ -70,8 +69,6 @@ public interface IBank
 		}
 		
 		Eraklys.CHANNEL.send(PacketDistributor.SERVER.noArg(), new PacketOpenBank());
-		
-		Minecraft.getInstance().displayGuiScreen(new ScreenBank(Minecraft.getInstance().player));
 	}
 	
 	@OnlyIn(Dist.DEDICATED_SERVER)

@@ -14,6 +14,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Item;
@@ -34,9 +35,9 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 	public Item transfer = null;
 	public boolean fromInvToBank = false;
 	
-	public ScreenBank(PlayerEntity player) 
+	public ScreenBank(ContainerBank container, PlayerInventory inventory) 
 	{
-		super(new ContainerBank(player), null, new TranslationTextComponent("economy.bank"));
+		super(container, inventory, new TranslationTextComponent("economy.bank"));
 	}
 	
 	protected void init()

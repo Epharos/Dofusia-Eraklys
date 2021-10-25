@@ -3,6 +3,7 @@ package fr.eraklys.utils;
 import fr.eraklys.economy.bank.PacketBankMoney;
 import fr.eraklys.economy.bank.PacketOpenBank;
 import fr.eraklys.economy.bank.PacketSendBankItems;
+import fr.eraklys.economy.bank.PacketUpdateBankInventory;
 import fr.eraklys.packets.PacketCloseScreen;
 import fr.eraklys.player.inventory.PacketChangeInventory;
 import fr.eraklys.player.inventory.PacketUpdateHotbar;
@@ -29,5 +30,6 @@ public class PacketRegisterer
 		channel.messageBuilder(PacketUpdateMoney.class, i++).encoder(PacketUpdateMoney::write).decoder(PacketUpdateMoney::read).consumer(PacketUpdateMoney::handle).add();
 		channel.messageBuilder(PacketBankMoney.class, i++).encoder(PacketBankMoney::write).decoder(PacketBankMoney::read).consumer(PacketBankMoney::handle).add();
 		channel.messageBuilder(PacketSendBankItems.class, i++).encoder(PacketSendBankItems::write).decoder(PacketSendBankItems::read).consumer(PacketSendBankItems::handle).add();
+		channel.messageBuilder(PacketUpdateBankInventory.class, i++).encoder(PacketUpdateBankInventory::write).decoder(PacketUpdateBankInventory::read).consumer(PacketUpdateBankInventory::handle).add();
 	}
 }

@@ -5,18 +5,18 @@ import java.util.List;
 import org.lwjgl.glfw.GLFW;
 
 import fr.eraklys.Eraklys;
-import fr.eraklys.init.ModBlocks;
+import fr.eraklys.economy.bank.ContainerBank;
+import fr.eraklys.economy.bank.ScreenBank;
 import fr.eraklys.screen.MainMenu;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.fixes.ChunkPaletteFormat.Direction.Offset;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 public class ClientProxy extends Proxy 
 {
@@ -40,6 +40,9 @@ public class ClientProxy extends Proxy
 	public ClientProxy()
 	{
 		MinecraftForge.EVENT_BUS.addListener(this::mainMenu);
+		
+		ScreenManager.<ContainerBank, ScreenBank>registerFactory(
+				ContainerBank._TYPE, (container, inv, title) -> { return new ScreenBank(container, inv); });
 	}
 
 	static

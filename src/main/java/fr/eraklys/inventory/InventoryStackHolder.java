@@ -95,7 +95,6 @@ public class InventoryStackHolder implements IItemHandler, IItemHandlerModifiabl
 			entry.getKey().getStack().write(cnbt);
 			cnbt.putInt("Quantity", entry.getValue());
 			listnbt.add(cnbt);
-			Eraklys.LOGGER.debug("Writing " + entry.getValue() + " of " + entry.getKey().getStack().toString());
 		}
 		
 		CompoundNBT nbt = new CompoundNBT();
@@ -114,7 +113,6 @@ public class InventoryStackHolder implements IItemHandler, IItemHandlerModifiabl
 			ItemStack stack = ItemStack.read(cnbt);
 			int k = cnbt.getInt("Quantity");
 			this.addStack(stack, k, e);
-			Eraklys.LOGGER.debug("Reading " + k + " of " + stack.toString());
 		}
 	}
 	
