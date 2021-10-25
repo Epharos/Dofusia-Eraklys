@@ -1,9 +1,9 @@
 package fr.eraklys.blocks;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.GrassBlock;
+import net.minecraft.block.TallGrassBlock;
 
-public class TallGrassIncarnateBlock extends GrassBlock
+public class TallGrassIncarnateBlock extends TallGrassBlock
 {
 	public TallGrassIncarnateBlock(Properties properties) 
 	{
