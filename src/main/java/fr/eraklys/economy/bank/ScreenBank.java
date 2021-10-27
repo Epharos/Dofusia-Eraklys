@@ -1,5 +1,8 @@
 package fr.eraklys.economy.bank;
 
+import java.util.Iterator;
+
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 
@@ -9,30 +12,28 @@ import fr.eraklys.inventory.slots.IRenderSlot;
 import fr.eraklys.screen.MenuableContainerScreen;
 import fr.eraklys.screen.widget.SimpleScrollBar;
 import fr.eraklys.utils.FontRendererStringUtil;
+import fr.eraklys.utils.ItemStackUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.BossInfo.Color;
 
 public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 {
 	public static final ResourceLocation texture = new ResourceLocation(Eraklys.MODID, "textures/gui/bank.png");
 	
 	private SimpleScrollBar inventoryBar, bankBar;
-	private TextFieldWidget quantity;
+	public TextFieldWidget quantity;
+	public TransferArrow invToBank, bankToInv;
 	
-	public Item selectedItem = null;
-	public boolean from = false; //false = de l'inventaire vers la banque, true = de la banque vers l'inventaire
-	
-	public Item transfer = null;
+	public ItemStack transfer = ItemStack.EMPTY;
 	public boolean fromInvToBank = false;
 	
 	public ScreenBank(ContainerBank container, PlayerInventory inventory) 
@@ -54,6 +55,11 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 		
 		this.addButton(quantity = new TextFieldWidget(font, this.guiLeft + this.xSize / 2 - 55, this.guiTop + this.ySize + 10, 110, 20, "1"));
 		quantity.setVisible(false);
+		
+		this.addButton(invToBank = new TransferArrow(this.guiLeft + this.xSize / 2 - 78, this.guiTop + this.ySize + 14, false, this));
+		this.addButton(bankToInv = new TransferArrow(this.guiLeft + this.xSize / 2 + 63, this.guiTop + this.ySize + 14, true, this));
+		invToBank.visible = false;
+		bankToInv.visible = false;
 	}
 	
 	@SuppressWarnings("resource")
@@ -85,6 +91,8 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 		
 		this.inventoryBar.updateContainerHeight((int)(Math.ceil(this.getContainer().playerStacks.size() / 9) * 18));
 		this.bankBar.updateContainerHeight((int)(Math.ceil(this.getContainer().stacks.size() / 9) * 18));
+		
+		this.itemRenderer.renderItemAndEffectIntoGUI(this.minecraft.player, this.transfer, this.guiLeft + this.xSize / 2 + (this.fromInvToBank ? 63 : -78), this.guiTop + this.ySize + 12);
 	}
 	
 	public void render(int p_render_1_, int p_render_2_, float p_render_3_) 
@@ -250,6 +258,113 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 		if (slotIn != null) 
 		{
 			this.getContainer().slotClick(slotIn.getSlotIndex(), mouseButton, type, Minecraft.getInstance().player);
+		}
+	}
+	
+	@SuppressWarnings("resource")
+	public void processTransfer()
+	{
+		try
+		{
+			int count = Integer.valueOf(this.quantity.getText());
+			
+			if(this.fromInvToBank)
+			{
+				this.getMinecraft().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+					cap.getBankInventory().addStack(ItemStackUtil.getPrototype(this.transfer), count, this.getMinecraft().player);
+					
+					if(!this.container.stacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, this.transfer)).findFirst().isPresent())
+					{
+						this.container.stacks.add(this.transfer);
+					}
+				});
+				
+				this.getMinecraft().player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+					if(cap.getInventory().getCount(this.transfer) < 1)
+					{
+						for(Iterator<ItemStack> it = this.container.playerStacks.iterator() ; it.hasNext() ;)
+						{
+							ItemStack i = it.next();
+							
+							if(ItemStack.areItemStacksEqual(this.transfer, i))
+							{
+								it.remove();
+							}
+						}
+					}
+				});
+				
+				Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(this.transfer), count, true));
+			}
+			else
+			{
+				this.getMinecraft().player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {							
+					if(!this.container.playerStacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, this.transfer)).findFirst().isPresent())
+					{
+						this.container.playerStacks.add(this.transfer);
+					}
+				});
+				
+				this.getMinecraft().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+					cap.getBankInventory().removeStack(ItemStackUtil.getPrototype(this.transfer), count, this.getMinecraft().player, false);
+					
+					if(cap.getBankInventory().getCount(this.transfer) < 1)
+					{
+						for(Iterator<ItemStack> it = this.container.stacks.iterator() ; it.hasNext() ;)
+						{
+							ItemStack i = it.next();
+							
+							if(ItemStack.areItemStacksEqual(this.transfer, i))
+							{
+								it.remove();
+							}
+						}
+					}
+				});
+				
+				Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(this.transfer), count, false));
+			}
+		}
+		catch(Exception e)
+		{
+			this.quantity.setTextColor(0xf00);
+		}
+		finally
+		{
+			//TODO : cacher l'item et les flèches
+			this.quantity.setVisible(false);
+			this.invToBank.visible = false;
+			this.bankToInv.visible = false;
+			this.transfer = ItemStack.EMPTY;
+		}
+	}
+	
+	public class TransferArrow extends Widget
+	{
+		public boolean direction = false;
+		private ScreenBank sb;
+		
+		public TransferArrow(int xIn, int yIn, boolean f, ScreenBank si) 
+		{
+			super(xIn, yIn, 13, 10, "");
+			this.direction = f;
+			this.sb = si;
+		}
+		
+		public void renderButton(int p_renderButton_1_, int p_renderButton_2_, float p_renderButton_3_) 
+		{
+			Minecraft minecraft = Minecraft.getInstance();
+			minecraft.getTextureManager().bindTexture(ScreenBank.texture);
+			RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+			RenderSystem.enableBlend();
+			RenderSystem.defaultBlendFunc();
+			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			this.blit(this.x, this.y, 1 + (this.direction ? 19 : 0), 187, 15, 12);
+		}
+		
+		public void onClick(double p_onClick_1_, double p_onClick_3_) 
+		{
+			sb.processTransfer();
 		}
 	}
 }

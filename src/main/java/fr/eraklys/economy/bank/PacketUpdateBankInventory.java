@@ -66,10 +66,7 @@ public class PacketUpdateBankInventory
 			});
 			
 			context.getSender().getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
-				if(packet.add)
-				{
-					cap.putStack(packet.stack, packet.count);
-				}
+				cap.putStack(packet.stack, packet.count);
 			});
 		}
 		else

@@ -61,13 +61,20 @@ public class InventoryStackHolder implements IItemHandler, IItemHandlerModifiabl
 				this.getMapping().put(cis, i - realAmount);
 				
 				if(this.getMapping().get(cis) <= 0)
+				{
 					this.getMapping().remove(cis);
+				}
 			}
 			
 			return amount == realAmount;
 		}
 		
 		return false;
+	}
+	
+	public int getCount(ItemStack stack)
+	{
+		return this.getMapping().get(new ComparableItemStack(stack));
 	}
 	
 	public ListedMap<ComparableItemStack, Integer> getMapping()

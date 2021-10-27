@@ -12,6 +12,8 @@ import fr.eraklys.inventory.slots.InventorySlot;
 import fr.eraklys.player.inventory.InventoryHolder;
 import fr.eraklys.utils.ItemStackUtil;
 import fr.eraklys.utils.ListedMap.Entry;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
@@ -163,6 +165,7 @@ public class ContainerBank extends Container
 		return true;
 	}
 	
+	@SuppressWarnings("resource")
 	@Override
 	public ItemStack slotClick(int slotId, int click, ClickType clickTypeIn, PlayerEntity player)
 	{		
@@ -171,29 +174,83 @@ public class ContainerBank extends Container
 			InventorySlot slot = (InventorySlot) this.getSlot(slotId);
 			if(slot.getHasStack())
 			{
-				if(clickTypeIn == ClickType.PICKUP_ALL) //double left click
+				if(clickTypeIn == ClickType.PICKUP && Screen.hasControlDown()) //left click + ctrl
+				{					
+					if(slot.getSlotIndex() < 8 * 9)
+					{						
+						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+							cap.getBankInventory().addStack(ItemStackUtil.getPrototype(slot.getStack()), 1, player);
+							
+							if(!stacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, slot.getStack())).findFirst().isPresent())
+							{
+								stacks.add(slot.getStack());
+							}
+						});
+						
+						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+							if(cap.getInventory().getCount(slot.getStack()) < 1)
+							{
+								for(Iterator<ItemStack> it = playerStacks.iterator() ; it.hasNext() ;)
+								{
+									ItemStack i = it.next();
+									
+									if(ItemStack.areItemStacksEqual(slot.getStack(), i))
+									{
+										it.remove();
+									}
+								}
+							}
+						});
+						
+						Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(slot.getStack()), 1, true));
+					}
+					else
+					{						
+						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {							
+							if(!playerStacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, slot.getStack())).findFirst().isPresent())
+							{
+								playerStacks.add(slot.getStack());
+							}
+						});
+						
+						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+							cap.getBankInventory().removeStack(ItemStackUtil.getPrototype(slot.getStack()), 1, player, false);
+							
+							if(cap.getBankInventory().getCount(slot.getStack()) < 1)
+							{
+								for(Iterator<ItemStack> it = stacks.iterator() ; it.hasNext() ;)
+								{
+									ItemStack i = it.next();
+									
+									if(ItemStack.areItemStacksEqual(slot.getStack(), i))
+									{
+										it.remove();
+									}
+								}
+							}
+						});
+						
+						Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(slot.getStack()), 1, false));
+					}
+				}
+				else if(clickTypeIn == ClickType.PICKUP && !Screen.hasControlDown())
 				{
-					//TODO : Pourquoi ça marche pas ?
+					ScreenBank bank = (ScreenBank)Minecraft.getInstance().currentScreen;
+					bank.transfer = ItemStackUtil.getPrototype(slot.getStack());
+					bank.quantity.setText("1");
+					bank.quantity.setVisible(true);
 					
 					if(slot.getSlotIndex() < 8 * 9)
 					{
-						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
-							cap.removeStack(ItemStackUtil.getPrototype(slot.getStack()), 1, false);
-						});
-						
-						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
-							cap.getBankInventory().addStack(ItemStackUtil.getPrototype(slot.getStack()), 1, player);
-						});
+						bank.fromInvToBank = true;
+						bank.invToBank.visible = true;
+						bank.bankToInv.visible = false;
 					}
 					else
 					{
-						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
-							cap.getBankInventory().removeStack(ItemStackUtil.getPrototype(slot.getStack()), 1, player, false);
-						});
-						
-						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
-							cap.putStack(ItemStackUtil.getPrototype(slot.getStack()), 1);
-						});
+						bank.fromInvToBank = false;
+						bank.bankToInv.visible = true;
+						bank.invToBank.visible = false;
 					}
 				}
 				else if(clickTypeIn == ClickType.PICKUP && click == 1) //right click once
@@ -208,9 +265,7 @@ public class ContainerBank extends Container
 //					});
 				}
 				else if(clickTypeIn == ClickType.QUICK_MOVE) //shift + left click
-				{
-					//TODO : Dégager les stacks vides (quantité 0, souvent le dernier slot)
-					
+				{					
 					if(slot.getSlotIndex() < 8 * 9)
 					{
 						AtomicInteger ai = new AtomicInteger(0);
@@ -221,28 +276,21 @@ public class ContainerBank extends Container
 						
 						player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
 							cap.getBankInventory().addStack(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), player);
-							stacks.add(slot.getStack());
+							
+							if(!stacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, slot.getStack())).findFirst().isPresent())
+							{
+								stacks.add(slot.getStack());
+							}
 						});
 						
-						Iterator<ItemStack> it = playerStacks.iterator();
-						
-						for(ItemStack i = ItemStack.EMPTY ; it.hasNext() ; i = it.next())
+						for(Iterator<ItemStack> it = playerStacks.iterator() ; it.hasNext() ;)
 						{
+							ItemStack i = it.next();
+							
 							if(ItemStack.areItemStacksEqual(slot.getStack(), i))
 							{
 								it.remove();
 							}
-							
-//							final ItemStack is = i;
-//							
-//							player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
-//								
-//								if(cap.getInventory().getMapping().get(new ComparableItemStack(is)) == null ||
-//										cap.getInventory().getMapping().get(new ComparableItemStack(is)) == 0)
-//								{
-//									it.remove();
-//								}
-//							});
 						}
 						
 						Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), true));
@@ -258,27 +306,21 @@ public class ContainerBank extends Container
 						
 						player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
 							cap.putStack(ItemStackUtil.getPrototype(slot.getStack()), 0);
-							playerStacks.add(slot.getStack());
+							
+							if(!playerStacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, slot.getStack())).findFirst().isPresent())
+							{
+								playerStacks.add(slot.getStack());
+							}
 						});
 						
-						Iterator<ItemStack> it = stacks.iterator();
-						
-						for(ItemStack i = ItemStack.EMPTY ; it.hasNext() ; i = it.next())
+						for(Iterator<ItemStack> it = stacks.iterator() ; it.hasNext() ;)
 						{
+							ItemStack i = it.next();
+							
 							if(ItemStack.areItemStacksEqual(slot.getStack(), i))
 							{
 								it.remove();
 							}
-							
-//							final ItemStack is = i;
-//							
-//							player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
-//								if(cap.getBankInventory().getMapping().get(new ComparableItemStack(is)) == null ||
-//										cap.getBankInventory().getMapping().get(new ComparableItemStack(is)) == 0)
-//								{
-//									it.remove();
-//								}
-//							});
 						}
 						
 						Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(slot.getStack()), ai.get(), false));
