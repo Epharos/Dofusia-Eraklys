@@ -12,20 +12,20 @@ import fr.eraklys.commands.GiveItemCommand;
 import fr.eraklys.commands.GiveRandomCommand;
 import fr.eraklys.commands.SpawnNpcCommand;
 import fr.eraklys.economy.bank.ContainerBank;
+import fr.eraklys.economy.bank.ScreenBank;
 import fr.eraklys.economy.bank.capability.IBank;
-impimport fr.eraklys.economy.bank.ScreenBank;
-ort fr.eraklys.economy.bank.capability.InventoryBankWrapper;
+import fr.eraklys.economy.bank.capability.InventoryBankWrapper;
 import fr.eraklys.economy.bank.capability.ServerInventoryBankHolder;
 import fr.eraklys.entities.EntitiesRegister;
 import fr.eraklys.entities.RenderRegister;
 import fr.eraklys.init.ModBlocks;
 import fr.eraklys.inventory.ComparableItemStack;
 import fr.eraklys.inventory.ItemWeight;
-import fr.eraklys.player.inventory.ContainerInventory;
-import fr.eraklys.player.inventory.Packeimport fr.eraklys.jobs.capability.IPlayerJobs;
+import fr.eraklys.jobs.capability.IPlayerJobs;
 import fr.eraklys.jobs.capability.PlayerJobsWrapper;
 import fr.eraklys.jobs.capability.ServerJobPlayerHolder;
-tUpdateMoney;
+import fr.eraklys.player.inventory.ContainerInventory;
+import fr.eraklys.player.inventory.PacketUpdateMoney;
 import fr.eraklys.player.inventory.ScreenInventory;
 import fr.eraklys.player.inventory.capability.IInventoryPlayer;
 import fr.eraklys.player.inventory.capability.InventoryPlayerWrapper;
@@ -79,11 +79,11 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
-import net.minecraftforge.fml.event.serverimport net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -152,7 +152,6 @@ public class Eraklys
 	public static final Capability<IPlayerJobs> PLAYER_JOBS_CAPABILITY = null;
 	public static final ResourceLocation JOB_KEY = new ResourceLocation(Eraklys.MODID, "player_job");
 	private static final Map<PlayerEntity, IPlayerJobs> INVALIDATED_JOB = new WeakHashMap<>();
-	
 	
 	/**
 	 * Constructor used by Forge to create and load the mod
@@ -274,7 +273,7 @@ public class Eraklys
 		event.addListener(() -> wrapper.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
 			INVALIDATED_BANK.put((PlayerEntity) event.getObject(), cap);
 		}));
-	} 
+	}
 	
 	private void attachJobCapability(final AttachCapabilitiesEvent<Entity> event)
 	{
@@ -314,7 +313,15 @@ public class Eraklys
 	public void copyCapabilities(final PlayerEvent.Clone event)
 	{
 		if(event.isWasDeath())
-		{			
+		{
+//			event.getEntity().getCapability(Eraklys.MONEY_CAPABILITY).ifPresent(copyCap -> {
+//				if(INVALIDATED_MONEY.containsKey(event.getOriginal()))
+//				{
+//					INBT nbt = Eraklys.MONEY_CAPABILITY.writeNBT(INVALIDATED_MONEY.get(event.getOriginal()), null);
+//					Eraklys.MONEY_CAPABILITY.readNBT(copyCap, null, nbt);
+//				}
+//			});
+			
 			event.getEntity().getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(copyCap -> {
 				if(INVALIDATED_INVENTORY.containsKey(event.getOriginal()))
 				{
@@ -336,6 +343,14 @@ public class Eraklys
 				{
 					INBT nbt = Eraklys.BANK_CAPABILITY.writeNBT(INVALIDATED_BANK.get(event.getOriginal()), null);
 					Eraklys.BANK_CAPABILITY.readNBT(copyCap, null, nbt);
+				}
+			});
+			
+			event.getEntity().getCapability(Eraklys.PLAYER_JOBS_CAPABILITY).ifPresent(copyCap -> {
+				if(INVALIDATED_JOB.containsKey(event.getOriginal()))
+				{
+					INBT nbt = Eraklys.PLAYER_JOBS_CAPABILITY.writeNBT(INVALIDATED_JOB.get(event.getOriginal()), null);
+					Eraklys.PLAYER_JOBS_CAPABILITY.readNBT(copyCap, null, nbt);
 				}
 			});
 		}
@@ -369,6 +384,8 @@ public class Eraklys
 				cap.syncQueue();
 			}
 		});
+		
+//		player.getCapability(Eraklys.MONEY_CAPABILITY).ifPresent(cap -> cap.sync());
 	}
 	
 	@SuppressWarnings("resource")
