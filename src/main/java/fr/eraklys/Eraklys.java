@@ -21,6 +21,9 @@ import fr.eraklys.entities.RenderRegister;
 import fr.eraklys.init.ModBlocks;
 import fr.eraklys.inventory.ComparableItemStack;
 import fr.eraklys.inventory.ItemWeight;
+import fr.eraklys.jobs.capability.IPlayerJobs;
+import fr.eraklys.jobs.capability.PlayerJobsWrapper;
+import fr.eraklys.jobs.capability.ServerJobPlayerHolder;
 import fr.eraklys.player.inventory.ContainerInventory;
 import fr.eraklys.player.inventory.PacketUpdateMoney;
 import fr.eraklys.player.inventory.ScreenInventory;
@@ -145,6 +148,11 @@ public class Eraklys
 	public static final ResourceLocation BANK_KEY = new ResourceLocation(Eraklys.MODID, "player_bank");
 	private static final Map<PlayerEntity, IBank> INVALIDATED_BANK = new WeakHashMap<>();
 	
+	@CapabilityInject(IPlayerJobs.class)
+	public static final Capability<IPlayerJobs> PLAYER_JOBS_CAPABILITY = null;
+	public static final ResourceLocation JOB_KEY = new ResourceLocation(Eraklys.MODID, "player_job");
+	private static final Map<PlayerEntity, IPlayerJobs> INVALIDATED_JOB = new WeakHashMap<>();
+	
 	/**
 	 * Constructor used by Forge to create and load the mod
 	 */
@@ -208,6 +216,7 @@ public class Eraklys
 			this.attachInventoryCapability(event);
 			this.attachQuestCapability(event);
 			this.attachBankCapability(event);
+			this.attachJobCapability(event);
 		}
 	}
 	
@@ -266,6 +275,21 @@ public class Eraklys
 		}));
 	}
 	
+	private void attachJobCapability(final AttachCapabilitiesEvent<Entity> event)
+	{
+		PlayerJobsWrapper wrapper;
+		
+		if(event.getObject() instanceof ServerPlayerEntity)
+			wrapper = new PlayerJobsWrapper(new ServerJobPlayerHolder((PlayerEntity) event.getObject()));
+		else
+			wrapper = new PlayerJobsWrapper();
+		
+		event.addCapability(JOB_KEY, wrapper);
+		event.addListener(() -> wrapper.getCapability(Eraklys.PLAYER_JOBS_CAPABILITY).ifPresent(cap -> { 
+			INVALIDATED_JOB.put((PlayerEntity)event.getObject(), cap);
+		}));
+	}
+	
 	@SuppressWarnings("resource")
 	@OnlyIn(Dist.CLIENT)
 	@SubscribeEvent
@@ -319,6 +343,14 @@ public class Eraklys
 				{
 					INBT nbt = Eraklys.BANK_CAPABILITY.writeNBT(INVALIDATED_BANK.get(event.getOriginal()), null);
 					Eraklys.BANK_CAPABILITY.readNBT(copyCap, null, nbt);
+				}
+			});
+			
+			event.getEntity().getCapability(Eraklys.PLAYER_JOBS_CAPABILITY).ifPresent(copyCap -> {
+				if(INVALIDATED_JOB.containsKey(event.getOriginal()))
+				{
+					INBT nbt = Eraklys.PLAYER_JOBS_CAPABILITY.writeNBT(INVALIDATED_JOB.get(event.getOriginal()), null);
+					Eraklys.PLAYER_JOBS_CAPABILITY.readNBT(copyCap, null, nbt);
 				}
 			});
 		}
