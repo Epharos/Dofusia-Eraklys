@@ -1,13 +1,13 @@
 package fr.eraklys.jobs.capability;
 
-public class DefaultPlayerJobs implements IPlayerJobs
+public class PlayerJobsHolder implements IPlayerJobs
 {
 	protected int farmerExperience;
 	protected int minerExperience;
 	protected int lumberjackExperience;
 	protected int alchemistExperience;
 
-	public DefaultPlayerJobs() 
+	public PlayerJobsHolder() 
 	{
 		this.farmerExperience = 0;
 		this.minerExperience = 0;

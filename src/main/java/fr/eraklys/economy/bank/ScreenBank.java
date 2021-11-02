@@ -23,7 +23,6 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.BossInfo.Color;
 
 public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 {
@@ -93,6 +92,55 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 		this.bankBar.updateContainerHeight((int)(Math.ceil(this.getContainer().stacks.size() / 9) * 18));
 		
 		this.itemRenderer.renderItemAndEffectIntoGUI(this.minecraft.player, this.transfer, this.guiLeft + this.xSize / 2 + (this.fromInvToBank ? 63 : -78), this.guiTop + this.ySize + 12);
+	}
+	
+	@SuppressWarnings("resource")
+	public void removeFromStackList(ItemStack proto, boolean flag)
+	{
+		if(flag)
+		{
+			if(!container.stacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, proto)).findFirst().isPresent())
+			{
+				container.stacks.add(proto);
+			}
+			
+			getMinecraft().player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
+				if(cap.getInventory().getCount(proto) < 1)
+				{
+					for(Iterator<ItemStack> it = container.playerStacks.iterator() ; it.hasNext() ;)
+					{
+						ItemStack i = it.next();
+						
+						if(ItemStack.areItemStacksEqual(proto, i))
+						{
+							it.remove();
+						}
+					}
+				}
+			});
+		}
+		else
+		{
+			if(!container.playerStacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, proto)).findFirst().isPresent())
+			{
+				container.playerStacks.add(proto);
+			}
+			
+			getMinecraft().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+				if(cap.getBankInventory().getCount(proto) < 1)
+				{
+					for(Iterator<ItemStack> it = container.stacks.iterator() ; it.hasNext() ;)
+					{
+						ItemStack i = it.next();
+						
+						if(ItemStack.areItemStacksEqual(proto, i))
+						{
+							it.remove();
+						}
+					}
+				}
+			});
+		}
 	}
 	
 	public void render(int p_render_1_, int p_render_2_, float p_render_3_) 
@@ -269,59 +317,11 @@ public class ScreenBank extends MenuableContainerScreen<ContainerBank>
 			int count = Integer.valueOf(this.quantity.getText());
 			
 			if(this.fromInvToBank)
-			{
-				this.getMinecraft().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
-					cap.getBankInventory().addStack(ItemStackUtil.getPrototype(this.transfer), count, this.getMinecraft().player);
-					
-					if(!this.container.stacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, this.transfer)).findFirst().isPresent())
-					{
-						this.container.stacks.add(this.transfer);
-					}
-				});
-				
-				this.getMinecraft().player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
-					if(cap.getInventory().getCount(this.transfer) < 1)
-					{
-						for(Iterator<ItemStack> it = this.container.playerStacks.iterator() ; it.hasNext() ;)
-						{
-							ItemStack i = it.next();
-							
-							if(ItemStack.areItemStacksEqual(this.transfer, i))
-							{
-								it.remove();
-							}
-						}
-					}
-				});
-				
+			{				
 				Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(this.transfer), count, true));
 			}
 			else
-			{
-				this.getMinecraft().player.getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {							
-					if(!this.container.playerStacks.stream().filter(s -> ItemStack.areItemStacksEqual(s, this.transfer)).findFirst().isPresent())
-					{
-						this.container.playerStacks.add(this.transfer);
-					}
-				});
-				
-				this.getMinecraft().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
-					cap.getBankInventory().removeStack(ItemStackUtil.getPrototype(this.transfer), count, this.getMinecraft().player, false);
-					
-					if(cap.getBankInventory().getCount(this.transfer) < 1)
-					{
-						for(Iterator<ItemStack> it = this.container.stacks.iterator() ; it.hasNext() ;)
-						{
-							ItemStack i = it.next();
-							
-							if(ItemStack.areItemStacksEqual(this.transfer, i))
-							{
-								it.remove();
-							}
-						}
-					}
-				});
-				
+			{				
 				Eraklys.CHANNEL.sendToServer(new PacketUpdateBankInventory(ItemStackUtil.getPrototype(this.transfer), count, false));
 			}
 		}

@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import fr.eraklys.Eraklys;
 import fr.eraklys.inventory.ComparableItemStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.api.distmarker.Dist;
@@ -11,6 +12,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class PacketUpdateBankInventory 
 {
@@ -49,6 +51,10 @@ public class PacketUpdateBankInventory
 			{
 				handleServer(packet, context.get());
 			}
+			else
+			{
+				handleClient(packet, context.get());
+			}
 		});
 		context.get().setPacketHandled(true);
 	}
@@ -67,6 +73,8 @@ public class PacketUpdateBankInventory
 			
 			context.getSender().getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
 				cap.putStack(packet.stack, packet.count);
+				
+				Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> context.getSender()), packet);
 			});
 		}
 		else
@@ -76,11 +84,44 @@ public class PacketUpdateBankInventory
 					return;
 				
 				cap.removeStack(packet.stack, packet.count, false);
+				
+				Eraklys.CHANNEL.send(PacketDistributor.PLAYER.with(() -> context.getSender()), packet);
 			});
 			
 			context.getSender().getCapability(Eraklys.INVENTORY_CAPABILITY).ifPresent(cap -> {
 				cap.putStack(packet.stack, packet.count);
 			});
+		}
+	}
+	
+	/**
+	 * Allow the bank capability to be synchronized
+	 * 
+	 * @param packet
+	 * @param context
+	 */
+	@SuppressWarnings("resource")
+	@OnlyIn(Dist.CLIENT)
+	private static void handleClient(PacketUpdateBankInventory packet, Context context) 
+	{
+		if(packet.add) //if we add items from the player inventory to the bank
+		{
+			Minecraft.getInstance().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+				cap.putStack(packet.stack, packet.count);
+			});
+			
+			((ScreenBank)(Minecraft.getInstance().currentScreen)).removeFromStackList(packet.stack, true);
+		}
+		else
+		{
+			Minecraft.getInstance().player.getCapability(Eraklys.BANK_CAPABILITY).ifPresent(cap -> {
+				if(cap.getBankInventory().getMapping().get(new ComparableItemStack(packet.stack)) < packet.count)
+					return;
+				
+				cap.removeStack(packet.stack, packet.count, false);
+			});
+			
+			((ScreenBank)(Minecraft.getInstance().currentScreen)).removeFromStackList(packet.stack, false);
 		}
 	}
 }

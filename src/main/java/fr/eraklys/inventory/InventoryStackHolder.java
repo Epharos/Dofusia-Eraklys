@@ -74,7 +74,8 @@ public class InventoryStackHolder implements IItemHandler, IItemHandlerModifiabl
 	
 	public int getCount(ItemStack stack)
 	{
-		return this.getMapping().get(new ComparableItemStack(stack));
+		Integer i = this.getMapping().get(new ComparableItemStack(stack));
+		return i != null ? i : 0;
 	}
 	
 	public ListedMap<ComparableItemStack, Integer> getMapping()

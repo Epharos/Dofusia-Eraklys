@@ -2,7 +2,7 @@ package fr.eraklys.jobs.capability;
 
 import net.minecraft.entity.player.PlayerEntity;
 
-public class ServerJobPlayerHolder extends DefaultPlayerJobs 
+public class ServerJobPlayerHolder extends PlayerJobsHolder 
 {
 private PlayerEntity player;
 	

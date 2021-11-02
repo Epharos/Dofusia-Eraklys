@@ -6,7 +6,7 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 
-public class PlayerJobsStorage implements Capability.IStorage<IPlayerJobs>
+public class DefaultPlayerJobsStorage implements Capability.IStorage<IPlayerJobs>
 {
 	@CapabilityInject(IPlayerJobs.class)
     public static final Capability<IPlayerJobs> PLAYER_JOBS_CAPABILITY = null;

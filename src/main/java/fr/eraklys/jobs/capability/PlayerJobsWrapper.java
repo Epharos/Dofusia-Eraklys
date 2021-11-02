@@ -19,21 +19,21 @@ public class PlayerJobsWrapper implements ICapabilitySerializable<INBT>
 	
 	public PlayerJobsWrapper()
 	{
-		this(PlayerJobsStorage.PLAYER_JOBS_CAPABILITY.getDefaultInstance());
+		this(DefaultPlayerJobsStorage.PLAYER_JOBS_CAPABILITY.getDefaultInstance());
 	}
 	
 	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) 
 	{
-		return PlayerJobsStorage.PLAYER_JOBS_CAPABILITY.orEmpty(cap, this.lazyOptional);
+		return DefaultPlayerJobsStorage.PLAYER_JOBS_CAPABILITY.orEmpty(cap, this.lazyOptional);
 	}
 
 	public INBT serializeNBT() 
 	{
-		return PlayerJobsStorage.PLAYER_JOBS_CAPABILITY.writeNBT(this.playerJobs, null);
+		return DefaultPlayerJobsStorage.PLAYER_JOBS_CAPABILITY.writeNBT(this.playerJobs, null);
 	}
 
 	public void deserializeNBT(INBT nbt) 
 	{
-		PlayerJobsStorage.PLAYER_JOBS_CAPABILITY.readNBT(this.playerJobs, null, nbt);
+		DefaultPlayerJobsStorage.PLAYER_JOBS_CAPABILITY.readNBT(this.playerJobs, null, nbt);
 	}
 }
