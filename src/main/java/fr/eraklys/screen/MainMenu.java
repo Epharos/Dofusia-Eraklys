@@ -119,9 +119,9 @@ public class MainMenu extends Screen
 			Screen.blit((int)(((this.width - 265) / 2) * inverse), 620, this.getBlitOffset(), 1.0f, 1.0f, this.xLogoSize, this.yLogoSize, 1024, 1024);
 			RenderSystem.scalef(inverse, inverse, inverse);
 
-			this.drawString(this.font, "Dofusia", 2, this.height - ( 10 + 1 * (this.font.FONT_HEIGHT + 1)), 16777215 | l);
+			this.drawString(this.font, "Eraklys", 2, this.height - ( 10 + 1 * (this.font.FONT_HEIGHT + 1)), 16777215 | l);
 			this.drawString(this.font, "Version " + Eraklys.VERSION, 2, this.height - ( 10 + 0 * (this.font.FONT_HEIGHT + 0)), 16777215 | l);
-			this.drawString(this.font, "Copyright Dofusia. Do not distribute!", this.widthCopyrightRest + 15, this.height - 20 + 0, 16777215 | l);
+			this.drawString(this.font, "Copyright Eraklys. Do not distribute!", this.widthCopyrightRest + 15, this.height - 20 + 0, 16777215 | l);
 
 			this.drawString(this.font, "Copyright Mojang AB. Do not distribute!", this.widthCopyrightRest, this.height - 10, 16777215 | l);
 			if (p_render_1_ > this.widthCopyrightRest && p_render_1_ < this.widthCopyrightRest + this.widthCopyright && p_render_2_ > this.height - 10 && p_render_2_ < this.height) 

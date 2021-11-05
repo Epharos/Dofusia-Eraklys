@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "axis=y":    { "model": "eraklys:block/incarnate_log" },
+        "axis=z":     { "model": "eraklys:block/incarnate_log", "x": 90 },
+        "axis=x":     { "model": "eraklys:block/incarnate_log", "x": 90, "y": 90 }
+    }
+}

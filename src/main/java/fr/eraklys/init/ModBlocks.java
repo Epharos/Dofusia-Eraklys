@@ -4,6 +4,9 @@ import java.util.function.Supplier;
 
 import fr.eraklys.Eraklys;
 import fr.eraklys.blocks.TallGrassIncarnateBlock;
+import fr.eraklys.blocks.BlockLeavesCarpet;
+import fr.eraklys.blocks.BlockIncarnateLeaves;
+import fr.eraklys.blocks.BlockIncarnateLog;
 import fr.eraklys.blocks.BlockPathIncarnate;
 import fr.eraklys.blocks.BlockProperties;
 import net.minecraft.block.Block;
@@ -11,6 +14,7 @@ import net.minecraft.block.GrassBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.WallBlock;
+import net.minecraft.block.material.MaterialColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -21,9 +25,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModBlocks 
 {
-	@SuppressWarnings("deprecation")
 	private static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, Eraklys.MODID);
-	@SuppressWarnings("deprecation")
 	private static final DeferredRegister<Item> ITEM_BLOCKS = new DeferredRegister<>(ForgeRegistries.ITEMS, Eraklys.MODID);
 
 	public static final RegistryObject<Block> STONE_INCARNATE = registerBlockWithBasicItem("stone_incarnate", BlockProperties.STONE_INCARNATE);
@@ -46,6 +48,13 @@ public class ModBlocks
 	public static final RegistryObject<Block> GRASS_INCARNATE_BLOCK = registerBlockWithBasicItem("grass_incarnate_block", () -> new GrassBlock(BlockProperties.GRASS_INCARNATE_BLOCK));
 	public static final RegistryObject<Block> DIRT_INCARNATE = registerBlockWithBasicItem("dirt_incarnate", BlockProperties.DIRT_INCARNATE);
 	public static final RegistryObject<Block> GRASS_INCARNATE = registerBlockWithBasicItem("grass_incarnate", () -> new TallGrassIncarnateBlock(BlockProperties.GRASS_INCARNATE));
+	public static final RegistryObject<Block> INCARNATE_LOG = registerBlockWithBasicItem("incarnate_log", () -> new BlockIncarnateLog(MaterialColor.WOOD, BlockProperties.INCARNATE_LOG));
+	public static final RegistryObject<Block> INCARNATE_LOG_A = registerBlockWithBasicItem("incarnate_log_a", () -> new BlockIncarnateLog(MaterialColor.WOOD, BlockProperties.INCARNATE_LOG));
+	public static final RegistryObject<Block> INCARNATE_LOG_B = registerBlockWithBasicItem("incarnate_log_b", () -> new BlockIncarnateLog(MaterialColor.WOOD, BlockProperties.INCARNATE_LOG));
+	public static final RegistryObject<Block> INCARNATE_LEAVES = registerBlockWithBasicItem("incarnate_leaves", () -> new BlockIncarnateLeaves(BlockProperties.INCARNATE_LEAVES));
+	public static final RegistryObject<Block> INCARNATE_B_LOG = registerBlockWithBasicItem("incarnate_b_log", () -> new BlockIncarnateLog(MaterialColor.WOOD, BlockProperties.INCARNATE_LOG));
+	public static final RegistryObject<Block> INCARNATE_B_LEAVES = registerBlockWithBasicItem("incarnate_b_leaves", () -> new BlockIncarnateLeaves(BlockProperties.INCARNATE_LEAVES));
+	public static final RegistryObject<Block> INCARNATE_LEAVES_CARPET_A = registerBlockWithBasicItem("incarnate_leaves_carpet_a", () -> new BlockLeavesCarpet(BlockProperties.INCARNATE_LEAVES_CARPET_A));
 	
 	public static void register(IEventBus modEventBus)
     {

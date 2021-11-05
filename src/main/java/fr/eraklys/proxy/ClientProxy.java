@@ -8,6 +8,7 @@ import fr.eraklys.Eraklys;
 import fr.eraklys.economy.bank.ContainerBank;
 import fr.eraklys.economy.bank.ScreenBank;
 import fr.eraklys.screen.MainMenu;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.MainMenuScreen;
 import net.minecraft.client.settings.KeyBinding;

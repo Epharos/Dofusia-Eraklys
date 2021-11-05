@@ -1,0 +1,6 @@
+{
+    "parent": "block/leaves",
+    "textures": {
+        "all": "eraklys:blocks/incarnate_b_leaves"
+    }
+}

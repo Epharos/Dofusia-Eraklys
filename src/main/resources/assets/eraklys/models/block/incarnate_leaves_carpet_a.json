@@ -1,0 +1,7 @@
+{
+    "parent": "block/carpet",
+    "textures": {
+        "particle": "eraklys:blocks/incarnate_leaves_carpet_a",
+        "wool": "eraklys:blocks/incarnate_leaves_carpet_a"
+    }
+}

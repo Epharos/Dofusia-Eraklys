@@ -29,6 +29,9 @@ public class BlockProperties
 	public static final Block.Properties GRASS_INCARNATE_BLOCK = createProperties(Material.ORGANIC).sound(SoundType.PLANT).harvestTool(ToolType.SHOVEL).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
 	public static final Block.Properties DIRT_INCARNATE = createProperties(Material.EARTH).sound(SoundType.GROUND).harvestTool(ToolType.SHOVEL).harvestLevel(0).hardnessAndResistance(1.5F, 10.0F);
 	public static final Block.Properties GRASS_INCARNATE = createProperties(Material.TALL_PLANTS).sound(SoundType.PLANT).doesNotBlockMovement().hardnessAndResistance(0F, 0F);
+	public static final Block.Properties INCARNATE_LOG = createProperties(Material.WOOD).sound(SoundType.WOOD).hardnessAndResistance(2.0F, 5F);
+	public static final Block.Properties INCARNATE_LEAVES = createProperties(Material.LEAVES).sound(SoundType.PLANT).notSolid().hardnessAndResistance(0.2F);
+	public static final Block.Properties INCARNATE_LEAVES_CARPET_A = createProperties(Material.LEAVES).sound(SoundType.PLANT).notSolid().hardnessAndResistance(0.2F);
 	
 	private static Block.Properties createProperties(Material material)
     {
